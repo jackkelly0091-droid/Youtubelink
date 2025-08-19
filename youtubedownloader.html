@@ -1,0 +1,77 @@
+<html>
+<head>
+    <title>YouTube Video Downloader</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #eaeaea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .container-input {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 10px 15px;
+            width: 400px;
+            max-width: 90%;
+        }
+        .container-input input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 16px;
+            color: #333;
+        }
+        .container-input button {
+            background: #ff4444;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-input">
+        <input id="url" type="text" placeholder="Paste YouTube link..." />
+        <button onclick="downloadVideo()">Download</button>
+    </div>
+
+    <script>
+        async function downloadVideo() {
+            const url = document.getElementById("url").value.trim();
+            if (!url) {
+                alert("Please enter a YouTube link!");
+                return;
+            }
+
+            const response = await fetch("/download", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url })
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(blob);
+                a.download = "video.mp4";
+                a.click();
+            } else {
+                const error = await response.json();
+                alert("Error: " + error.error);
+            }
+        }
+    </script>
+</body>
+</html>
